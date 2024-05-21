@@ -112,47 +112,43 @@ void Update(Object* state, char input, int w, int h)
     int player_move_y = player_y + move_y;
     int player_move_p = player_move_x + player_move_y * w;
 
-    if (player_move_x <= 0 || player_move_x >= w - 1 ||
-        player_move_y <= 0 || player_move_y >= h)
+    if (state[player_move_p] == OBJ_WALL)
     {
         return;
     }
 
     int block_x = player_move_x + move_x;
     int block_y = player_move_y + move_y;
-    if (block_x <= 0 || block_x >= w - 1 ||
-        block_y <= 0 || block_y >= h)
-    {
-        return;
-    }
-    int block_move_p = block_x + block_y * w;
 
+    int block_move_p = block_x + block_y * w;
+    if (state[player_move_p] == OBJ_BLOCK || state[player_move_p] == OBJ_BLOCK_ON_GOAL)
+    {
+        if (state[block_move_p] == OBJ_GOAL)
+        {
+            state[block_move_p] = OBJ_BLOCK_ON_GOAL;
+            state[player_move_p] = (state[player_move_p] == OBJ_BLOCK) ? OBJ_SPACE : OBJ_GOAL;
+        }
+        else if (state[block_move_p] == OBJ_SPACE)
+        {
+            state[block_move_p] = OBJ_BLOCK;
+            state[player_move_p] = (state[player_move_p] == OBJ_BLOCK) ? OBJ_SPACE : OBJ_GOAL;
+        }
+        else
+        {
+            return;
+        }
+    }
 
     if (state[player_move_p] == OBJ_GOAL)
     {
 
         state[player_move_p] = OBJ_PLAYER_ON_GOAL;
-        state[player_p] = OBJ_SPACE;
+        state[player_p] = (state[player_p] == OBJ_PLAYER) ? OBJ_SPACE : OBJ_GOAL;
     }
     else if (state[player_move_p] == OBJ_SPACE)
     {
         state[player_move_p] = OBJ_PLAYER;
-        state[player_p] = OBJ_SPACE;
-    }
-    else
-    {
-        if (state[block_move_p] == OBJ_GOAL)
-        {
-            state[block_move_p] = OBJ_BLOCK_ON_GOAL;
-            state[player_move_p] = OBJ_PLAYER;
-            state[player_p] = OBJ_SPACE;
-        }
-        else if (state[block_move_p] == OBJ_SPACE)
-        {
-            state[block_move_p] = OBJ_BLOCK;
-            state[player_move_p] = OBJ_PLAYER;
-            state[player_p] = OBJ_SPACE;
-        }
+        state[player_p] = (state[player_p] == OBJ_PLAYER) ? OBJ_SPACE : OBJ_GOAL;
     }
 
 }
